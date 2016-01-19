@@ -11,13 +11,12 @@ QString QEnttecPro::getVersionString()
     return versionS;
 }
 
-QEnttecPro::QEnttecPro(int updateIntervalMs, QObject *parent):
+QEnttecPro::QEnttecPro(int numberOfChannels, int updateIntervalMs, QObject *parent):
     QObject(parent),
     _connectedB(false),
     _needsUpdate(false)
 {
-    _serialPortChooser = new qTGSerialPortChooser();
-
+    setNumberOfChannels(numberOfChannels);
     _timer = new QTimer();
     _timer->start(updateIntervalMs);
     QObject::connect(_timer, SIGNAL(timeout()), this, SLOT(update()));
@@ -28,26 +27,15 @@ QEnttecPro::~QEnttecPro()
     _serial.close();
     _connectedB = false;
 }
-bool QEnttecPro::autoConnect(){
-    _serialPortChooser->refresh();
 
-    if(_serialPortChooser->exec())
-    {
-        qDebug()<<"executed"<<_serialPortChooser->getSelectedPort();
-        connect(_serialPortChooser->getSelectedPort());
-
-    }
-
-    return false;
-}
-bool QEnttecPro::connect(QString portName, unsigned int channels) {
+bool QEnttecPro::connect(QString port) {
 
     if(_serial.isOpen())
     {
         _serial.close();
     }
 
-    _serial.setPortName(portName);
+    _serial.setPortName(port);
     _serial.setBaudRate(57600);
     _serial.setDataBits(QSerialPort::Data8);
     _serial.setParity(QSerialPort::NoParity);
@@ -55,12 +43,12 @@ bool QEnttecPro::connect(QString portName, unsigned int channels) {
 
     if (!_serial.open(QIODevice::ReadWrite)) {
         //emit error(tr("Can't open %1, error code %2").arg(portName).arg(serial.error()));
-        qDebug()<<"not connected to"<<portName<<"error"<<_serial.error();
+        qDebug()<<"not connected to"<<port<<"error"<<_serial.error();
         return false;
     }
     else
     {
-        qDebug()<<"is connected";
+        emit connected(port);
     }
 
 
@@ -74,11 +62,13 @@ bool QEnttecPro::isConnected()
 
 void QEnttecPro::disconnect()
 {
+    QString portName = _serial.portName();
     _serial.close();
     _connectedB = false;
+    emit disconnected(portName);
 }
 
-void QEnttecPro::setChannels(unsigned int channels) {
+void QEnttecPro::setNumberOfChannels(unsigned int channels) {
     if(channels < 24)
     {
         channels = 24;
@@ -118,10 +108,10 @@ void QEnttecPro::update(bool force) {
 }
 void QEnttecPro::setUpdateInterval(int updateIntervalMs)
 {
-    _timer->setInterval(updateInterval);
+    _timer->setInterval(updateIntervalMs);
 }
 
-bool QEnttecPro::badChannel(unsigned int channel) {
+bool QEnttecPro::isValidChannel(unsigned int channel) {
 	if(channel > levels.size()) {
 //		ofLogError() << "Channel " + ofToString(channel) + " is out of bounds. Only " + ofToString(levels.size()) + " channels are available.";
 		return true;
@@ -134,7 +124,7 @@ bool QEnttecPro::badChannel(unsigned int channel) {
 }
 
 void QEnttecPro::setLevel(unsigned int channel, unsigned char level) {
-	if(badChannel(channel)) {
+    if(isValidChannel(channel)) {
 		return;
 	}
 	channel--; // convert from 1-initial to 0-initial
@@ -151,7 +141,7 @@ void QEnttecPro::clear() {
 }
 
 unsigned char QEnttecPro::getLevel(unsigned int channel) {
-	if(badChannel(channel)) {
+    if(isValidChannel(channel)) {
 		return 0;
 	}
 	channel--; // convert from 1-initial to 0-initial

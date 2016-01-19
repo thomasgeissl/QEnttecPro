@@ -1,8 +1,13 @@
 #include "mainwindow.h"
+#include <QHBoxLayout>
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent):
+    QMainWindow(parent),
+    _dmx(new QEnttecPro(2)),
+    _serialPortWidget(new QTGSerialPortWidget(this))
 {
+    QWidget *mainWidget = new QWidget(this);
+    QHBoxLayout *mainLayout = new QHBoxLayout(mainWidget);
 
     QSlider *slider_red = new QSlider(this);
     slider_red->setOrientation(Qt::Vertical);
@@ -18,30 +23,24 @@ MainWindow::MainWindow(QWidget *parent)
     slider_blue->setMinimum(0);
     slider_blue->setMaximum(255);
 
-    QSplitter *splitter = new QSplitter(this);
-    splitter->setOrientation(Qt::Horizontal);
-    splitter->addWidget(slider_red);
-    splitter->addWidget(slider_green);
-    splitter->addWidget(slider_blue);
-    setCentralWidget(splitter);
 
+    mainLayout->addWidget(_serialPortWidget);
+    mainLayout->addWidget(slider_red);
+    mainLayout->addWidget(slider_green);
+    mainLayout->addWidget(slider_blue);
 
+    mainWidget->setLayout(mainLayout);
+    setCentralWidget(mainWidget);
+
+    connect(_serialPortWidget, SIGNAL(connectionRequest(QString)), _dmx, SLOT(connect(QString)));
+    connect(_dmx, SIGNAL(connected(QString)), this, SLOT(connectedToEnttecProDevice(QString)));
+
+    connect(_serialPortWidget, SIGNAL(disconnectionRequest()), _dmx, SLOT(disconnect()));
+    connect(_dmx, SIGNAL(disconnected(QString)), _serialPortWidget, SLOT(setDisconnected()));
 
     connect(slider_red, SIGNAL(valueChanged(int)), this, SLOT(setRed(int)));
     connect(slider_green, SIGNAL(valueChanged(int)), this, SLOT(setGreen(int)));
     connect(slider_blue, SIGNAL(valueChanged(int)), this, SLOT(setBlue(int)));
-
-
-
-    _dmx = new qTGEnttecPro();
-
-
-    _dmx->autoConnect();
-//    _dmx->connect("usbserial-EN160415");
-    _dmx->setChannels();
-    _dmx->update();
-
-
 }
 
 MainWindow::~MainWindow()
@@ -64,4 +63,16 @@ void MainWindow::setBlue(int value)
 {
     _dmx->setLevel(3, value);
 
+}
+
+void MainWindow::connectedToEnttecProDevice(QString portName)
+{
+    Q_UNUSED(portName);
+    _serialPortWidget->setConnected();
+}
+
+void MainWindow::disconnectedFromEnttecProDevice(QString portName)
+{
+    Q_UNUSED(portName);
+    _serialPortWidget->setDisconnected();
 }

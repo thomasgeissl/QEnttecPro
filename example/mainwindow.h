@@ -3,7 +3,8 @@
 
 #include <QtWidgets>
 #include <QMainWindow>
-#include "../qTGEnttecPro.h"
+#include "qenttecpro.h"
+#include "qtgserialportwidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -14,12 +15,16 @@ public:
     ~MainWindow();
 
 private:
-    qTGEnttecPro *_dmx;
+    QEnttecPro *_dmx;
+    QTGSerialPortWidget *_serialPortWidget;
 
-public slots:
+private slots:
     void setRed(int value);
     void setGreen(int value);
     void setBlue(int value);
+
+    void connectedToEnttecProDevice(QString port);
+    void disconnectedFromEnttecProDevice(QString portName);
 
 };
 

@@ -13,11 +13,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    ../qTGEnttecPro.cpp \
-    ../../qTGUtils/qTGSerialPortChooser/qtgserialportchooser.cpp
+        mainwindow.cpp
 
-HEADERS  += mainwindow.h \
-    ../qTGEnttecPro.h \
-    ../../qTGUtils/qTGUtils.h \
-    ../../qTGUtils/qTGSerialPortChooser/qtgserialportchooser.h
+HEADERS  += mainwindow.h
+include($$PWD/../QEnttecPro.pri)
+include($$PWD/libs/QTGUtils/QTGUtils.pri)
+
