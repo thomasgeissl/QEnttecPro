@@ -5,12 +5,16 @@ Description
 ---
 QEnttecPro is a Qt library, to drive an Enttec Pro DMX interface. It is a port of Kyle McDonald's ofxDmx addon for openFrameworks <https://github.com/kylemcdonald/ofxDmx>.
 
+Build status
+---
+[![Build Status](https://travis-ci.org/thomasgeissl/QEnttecPro.svg?branch=master)](https://travis-ci.org/thomasgeissl/QEnttecPro)
+
 Installation
 ---
 1. Clone this repo
-``` git clone https://github.com/thomasgeissl/QEnttecPro.git /path/to/your/libs/QEnttecPro ```
+``` git clone --recursive https://github.com/thomasgeissl/QEnttecPro.git /path/to/your/libs/QEnttecPro ```
 2. Include the lib in your project by adding the following line to your .pro file
-``` include(/path/to/your/libgs/QEnttecPro/QEnttecPro.pri) ```
+``` include(/path/to/your/libs/QEnttecPro/QEnttecPro.pri) ```
 
 License
 ---
