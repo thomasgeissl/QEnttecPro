@@ -16,6 +16,6 @@ SOURCES += main.cpp\
         mainwindow.cpp
 
 HEADERS  += mainwindow.h
-include($$PWD/../QEnttecPro.pri)
+include($$PWD/../../QEnttecPro.pri)
 include($$PWD/libs/QTGUtils/QTGUtils.pri)
 

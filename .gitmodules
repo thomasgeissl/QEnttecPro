@@ -1,0 +1,3 @@
+[submodule "examples/example/libs/QTGUtils"]
+	path = examples/example/libs/QTGUtils
+	url = https://github.com/thomasgeissl/QTGUtils.git
