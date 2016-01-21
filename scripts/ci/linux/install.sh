@@ -1,10 +1,7 @@
 #!/bin/bash
 set -ev
 
-sudo add-apt-repository --yes ppa:ubuntu-sdk-team/ppa
+sudo add-apt-repository --yes ppa:beineri/opt-qt551-trusty
 sudo apt-get update -qq
 
-sudo apt-get install qt5-default
-sudo apt-get install qt5-qmake
-sudo apt-get install qtbase5-dev-tools
-sudo apt-get install libqt5serialport5
+sudo apt-get install qt55base qt55serialport qt55tools
